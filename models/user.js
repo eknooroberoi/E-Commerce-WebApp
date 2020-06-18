@@ -69,21 +69,22 @@ userSchema.virtual("password")
 
 //add methods to user schema
 userSchema.methods = {
+
     //method1
     authenticate: function(plainText){
         return this.encryptPassword(plainText) === this.hashed_password; //if equal then authenticate will be successfull, return true
     },
 
     //method2
-    encryptPassword: function(password){
-        if(!password) return '';
+    encryptPassword: function(password) {
+        if(!password) return "";
         try{
             return crypto
             .createHmac("sha1", this.salt)
             .update(password)
             .digest("hex");
         }catch(err){
-            return '';
+            return "";
         }
     }
 };

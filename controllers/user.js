@@ -2,11 +2,11 @@ const User = require('../models/user')
 
 const jwt = require("jsonwebtoken"); // to generate signed token
 const expressJwt = require("express-jwt");// for authorization check
-const {errorHandler} = require('../helpers/dbErrorHandler');
+const { errorHandler } = require('../helpers/dbErrorHandler');
 
 //signup
 exports.signup = ( req, res ) => {
-    console.log("req.body", req.body);
+    //console.log("req.body", req.body);
     const user = new User(req.body);
     //save data in database
     //using call back function to return success or failure
@@ -44,7 +44,7 @@ exports.signin = (req,res) => {
         //we check if the plain password that is now encrypted matches with the one present in database, then we authenticate the user
         //create authenticate method in user model
         //401 not able to authenticate
-        if(!user.authenticate(password)){
+        if(!user.authenticate(password)) {
             return res.status(401).json({
                 error: "Email and password don't match"
             });
@@ -52,9 +52,9 @@ exports.signin = (req,res) => {
 
 
         //generate a signed token with user id and secret
-        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET);
+        const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET);
         //once we have the token we can persist the token as 't' in cookie with expiry date
-        res.cookie('t', token, {expire: new Date() +9999});
+        res.cookie('t', token, {expire: new Date() + 9999});
         //return response with user and token to frontend client
         //destructure, 
         const {_id, name, email, role} = user; //from user
@@ -63,3 +63,12 @@ exports.signin = (req,res) => {
     });
 
 };
+
+//signout
+//we need to clear cookie from response
+//when we sign the user in, we put token in response cookie, now we will clear that cookie from response
+exports.signout = (req, res) => {
+    res.clearCookie('t')
+    res.json({message: "Signout success" });
+};
+
