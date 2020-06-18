@@ -72,3 +72,8 @@ exports.signout = (req, res) => {
     res.json({message: "Signout success" });
 };
 
+//requireSignin used as a middleware to protect routes so that unknown user can't access it, user can't access it without signin
+exports.requireSignin = expressJwt({
+    secret: process.env.JWT_SECRET,
+    userProperty: "auth"
+});
