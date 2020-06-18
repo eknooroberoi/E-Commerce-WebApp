@@ -5,7 +5,8 @@ const mongoose = require("mongoose");
 const crypto = require("crypto");
 
 //used package UUID to generate unique strings
-const uuidv1= require("uuid/v1");
+const { v1: uuidv1 } = require('uuid');
+
 
 //create schema
 const userSchema = new mongoose.Schema({
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: true,
-        unique: 32
+        unique: true
         },
     //we are going to save hashed version of the password, for this we will use virtual fields, schemas help us to add methods, virtual fields, we take password from client but when we save it, we save hashed version of it
     hashed_password: {
@@ -57,13 +58,13 @@ const userSchema = new mongoose.Schema({
 userSchema.virtual("password")
 //set uses function that takes password from client side
 .set(function(password){
-    this._password = password
-    this.salt = uuidv1()
-    this.hashed_password = this.encryptPassword(password)
+    this._password = password;
+    this.salt = uuidv1();
+    this.hashed_password = this.encryptPassword(password);
 })
 .get(function(){
-    return this._password
-})
+    return this._password;
+});
 
 
 //add methods to user schema
