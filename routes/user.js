@@ -2,10 +2,11 @@
 
 const express = require("express");
 const router = express.Router();
-const { requireSignin } = require("../controllers/auth");
+const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
-//once user is logged in he can see his profile as well as other people profile like facebook
-router.get("/secret/:userId", requireSignin, (req, res) => {
+//loggedin user and authenticated user must have same id ie. a user now can't enter someone elses id and access it
+//if we put isAdmin then only if role=1 ie admin can access it
+router.get("/secret/:userId", requireSignin, isAuth, isAdmin, (req, res) => {
     res.json({
         user: req.profile
     });
@@ -17,6 +18,3 @@ router.param("userId", userById);
 
 module.exports= router;
 
-//2 middlewares required
-//1. authenticated user currently logged in (isauth)
-//2. for admin currently logged in, if user is admin then only he can access certain routes (isadmin)

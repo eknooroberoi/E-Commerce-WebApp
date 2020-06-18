@@ -77,3 +77,30 @@ exports.requireSignin = expressJwt({
     secret: process.env.JWT_SECRET,
     userProperty: "auth"
 });
+
+//2 middlewares required
+//1. authenticated user currently logged in (isauth)
+//2. for admin currently logged in, if user is admin then only he can access certain routes (isadmin)
+
+exports.isAuth = (req, res, next) => {
+    let user = req.profile && req.auth && req.profile._id == req.auth._id;
+    if(!user){
+        return res.status(403).json({
+            error: "Access denied"
+        });
+    }
+    next();
+};
+
+
+exports.isAdmin = (req, res, next) => {
+    //1=admin 0-not admin
+    //403=unaurtharised
+    if(req.profile.role === 0){
+        return res.status(403).json({
+            error: "Admin resourse! Access denied"
+        });
+    }
+    next();
+};
+
