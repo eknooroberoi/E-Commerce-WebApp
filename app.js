@@ -7,7 +7,8 @@ const bodyParser = require("body-parser");
 
 //coz we will save user credentials in cookie
 const cookieParser = require("cookie-parser");
-
+//express-validator- to validate data,example if user did not provide email or password or any of the required fields then we can send them friendly error message
+const expressValidator = require("express-validator");
 
 // load env variables
 require('dotenv').config();
@@ -27,6 +28,7 @@ mongoose.connect(process.env.DATABASE, {useNewUrlParser: true, useUnifiedTopolog
 app.use(morgan("dev"))
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(expressValidator());
 
 
 //routes middleware
