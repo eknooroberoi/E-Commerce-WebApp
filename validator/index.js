@@ -30,3 +30,4 @@ exports.userSignupValidator = (req,res,next) => {
 
 
 };
+// for signin we are using JWT(json web token)
