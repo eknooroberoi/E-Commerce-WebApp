@@ -31,6 +31,11 @@ const productSchema = new mongoose.Schema(
     quantity: { //increment or decrement quantity, when we sell products,(stuff management as Admin)
         type: Number
         },
+    //by default sold item will be 0, but if someone buys product, we will update the product quantity,ie:  quantity will go down , sold will go up
+    sold: {
+        type: Number,
+        default: 0
+        },
     photo: {
         data: Buffer,
         contentType: String

@@ -142,3 +142,52 @@ exports.update = (req,res) => {
 };
 
 
+//return products to our front end client
+//we want to return product based on sell and arrival
+//idea: show certain products based on sell, so if certain products have been sold more than the others
+//we want to return these products to front end client, so that these products can be displayed as most popular products
+//and some of the products which are new/just arrived then we can show newly added products as new arrivals to front end client
+//1st we have to go to product model, add a sold field
+
+//create a method that grabs the route parameters and based on that it will fetch products from database and return to frontend client
+//1) if we want to return products by sell:  /products?sortBy=sold&order=desc&limit=4, example return 4 products on each request
+//2) if we want to return products based on arrival:  /products?sortBy=createdAt&order=desc&limit=4
+//all these query parameters come from frontend client
+// if no params are send, then all products are returned, it is flexible
+
+//if we get search query parameters based on that our method will work
+
+
+//order= grabs order from route parameter
+//1)if we get a query grab order based on that, otherwise by default do order ascending
+//2)if we get sort by from request query then grab it, else sort based on id(default)
+//3 if we query based on limit grab it else default limit is 6
+exports.list = (req,res) => {
+    let order = req.query.order ? req.query.order :'asc';
+    let sortBy = req.query.sortBy ? req.query.sortBy :'_id';
+    let limit = req.query.limit ? parseInt(req.query.limit) : 6;
+
+    //pulling products from db based on query
+    //1)we don't want to get everything and send as response, so we use select method, and we want to deselect "photo"
+    //coz we are saving all the photos for each products in the db, in the binary data, size is big for each photo, 
+    //so when we are returning all the products we do not want to send photo altogether, it is going to be very slow
+    //so want we do is we display the product and we will make another request to fetch the photo of that product, 
+    //2)then each product we want to populate category also, why we can do: (in category model) as category is type of mongoose object id and it refers to the category model
+    //populate particular category associated with product,category name, updated at and all are available her
+    //3) to sort we pass arry of array, sort based on sort by, order
+    //4) limit- default 6
+    Product.find()
+            .select("-photo")
+            .populate("category")
+            .sort([[sortBy, order]])
+            .limit(limit)
+            .exec((err, products) => {
+                if(err) {
+                    return res.status(400).json({
+                        error: "Products not found"
+                    });
+                }
+                res.send(products);
+            });
+
+};
