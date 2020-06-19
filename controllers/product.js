@@ -6,6 +6,22 @@ const Product = require("../models/product");
 const { result } = require("lodash");
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
+exports.productById = (req, res, next, id) => {
+    Product.findById(id).exec((err, product) => {
+        if(err || !product) {
+            return res.status(400).json({
+                error: "Product not found"
+            });
+        }
+        req.product = product;
+        next();
+    });
+};
+
+exports.read = (req, res) => {
+    req.product.photo = undefined;
+    return res.json(req.product);
+};
 //we need to send form data because we have to handle image upload, when creating new category we can access anything we needed from request body
 //but can't do this because we are handling image upload also, we need to send form data whether from client whether it is from react or postman
 //we need to use form data, in order to use form data and all the files coming with it, we need to use package called formidable, other packages example: matla package to handle image upload
