@@ -212,3 +212,16 @@ exports.listRelated = (req, res) => {
         res.json(products);
     });
 };
+
+
+exports.listCategories = (req, res) => {
+    //get all the distinct categories used in the product model, {}- we can pass queries, here we are giving empty object
+    Product.distinct("category", {}, (err, categories) => {
+        if(err){
+            return res.status(400).json({
+                error: "Categories not found"
+            });
+        }
+        res.json(categories);
+    });
+};
