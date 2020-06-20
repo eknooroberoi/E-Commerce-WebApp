@@ -4,7 +4,7 @@ const express = require("express");
 const router = express.Router();
 
 //create= to create new category
-const { create, productById, read, remove, update, list, listRelated, listCategories } = require("../controllers/product");
+const { create, productById, read, remove, update, list, listRelated, listCategories, listBySearch } = require("../controllers/product");
 const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
 const { route } = require("./auth");
@@ -18,6 +18,9 @@ router.get("/products", list);
 //based on product id fetch related products
 router.get("/products/related/:productId", listRelated);
 router.get("/products/categories", listCategories);
+//why post? we will be sending objects, filter, how we are going to filter the products, the categories, price range in the req body
+//therefore to access product body we have to use post method
+router.post("/products/by/search", listBySearch);
 
 router.param("userId", userById);
 router.param("productId", productById);

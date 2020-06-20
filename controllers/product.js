@@ -225,3 +225,66 @@ exports.listCategories = (req, res) => {
         res.json(categories);
     });
 };
+
+
+/**
+ * list products by search
+ * we will implement product search in react frontend
+ * we will show categories in checkbox and price range in radio buttons ex: 10-20, 30-80 etc
+ * as the user clicks on those checkbox and radio buttons
+ * we will make api request to the backend and show the products to users based on what he wants
+ */
+ 
+// route - make sure its post
+
+ 
+exports.listBySearch = (req, res) => {
+    let order = req.body.order ? req.body.order : "desc";
+    let sortBy = req.body.sortBy ? req.body.sortBy : "_id";
+    let limit = req.body.limit ? parseInt(req.body.limit) : 100;
+    //load more button on page, by default show around 6 or more products on the page, 
+    //if they want to see more products, so on clicking on button they will see other products
+    let skip = parseInt(req.body.skip);
+    //findArgs is arguments object, it will contain category id and price range, beginning it is empty
+    //on the basis of request body, we will populate the object
+    //find what is present in req body first, we grab key out of the object and if the key length>0, then run function else don't run.
+    //if len>0, check for price, it will be in format [0-10], grab key > 0 and <1, here [key][0] is 0 and [key][1]= 10 ie filtering based on price
+    //otherwise just grab keys
+    let findArgs = {};
+ 
+    // console.log(order, sortBy, limit, skip, req.body.filters);
+    // console.log("findArgs", findArgs);
+ 
+    for (let key in req.body.filters) {
+        if (req.body.filters[key].length > 0) {
+            if (key === "price") {
+                // gte -  greater than price [0-10]
+                // lte - less than
+                findArgs[key] = {
+                    $gte: req.body.filters[key][0],
+                    $lte: req.body.filters[key][1]
+                };
+            } else {
+                findArgs[key] = req.body.filters[key];
+            }
+        }
+    }
+    //find product based on search
+    Product.find(findArgs)
+        .select("-photo") // don't select photo
+        .populate("category")
+        .sort([[sortBy, order]])
+        .skip(skip)
+        .limit(limit)
+        .exec((err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    error: "Products not found"
+                });
+            }
+            res.json({
+                size: data.length,
+                data
+            });
+        });
+};
