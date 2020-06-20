@@ -288,3 +288,15 @@ exports.listBySearch = (req, res) => {
             });
         });
 };
+
+//photo will work as middleware, anytime we get request to this route, it will return product photo and continue
+//we can view any product photo
+//in postman copy the link formed and put in chrome, we can see the photo
+exports.photo = (req, res, next) => {
+    if(req.product.photo.data) {
+        //won't be a json response
+        res.set("Content-Type", req.product.photo.contentType);
+        return res.send(req.product.photo.data);
+    }
+    next();
+};
